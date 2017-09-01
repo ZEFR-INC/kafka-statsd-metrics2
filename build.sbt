@@ -32,3 +32,25 @@ libraryDependencies ++= Seq(
   "org.easymock" % "easymock" % "3.2",
   "org.mockito" % "mockito-core"  % "2.8.9"
 )
+
+
+////////////////////////////
+// publish to artifactory //
+////////////////////////////
+
+
+// http://www.scala-sbt.org/0.13/docs/Using-Sonatype.html
+publishMavenStyle := true
+
+publishTo := {
+  if (isSnapshot.value)
+    Some("Artifactory Realm" at s"$artifactory/libs-snapshot")
+  else
+    Some("Artifactory Realm"  at s"$artifactory/libs-release")
+}
+credentials ++= {
+  for {
+    username <- Option(System.getenv().get("ARTIFACTORY_USERNAME"))
+    password <- Option(System.getenv().get("ARTIFACTORY_PASSWORD"))
+  } yield Credentials("Artifactory Realm", "zefr.jfrog.io", username, password)
+}.toSeq
